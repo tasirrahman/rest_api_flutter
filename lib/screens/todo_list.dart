@@ -15,6 +15,13 @@ class TodoListPage extends StatefulWidget {
 class _TodoListPageState extends State<TodoListPage> {
   bool isLoading = true;
   List items = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchTodo();
+  }
+
   Future<void> fetchTodo() async {
     const url = "https://api.nstack.in/v1/todos";
     final uri = Uri.parse(url);
@@ -41,6 +48,33 @@ class _TodoListPageState extends State<TodoListPage> {
     }
   }
 
+  Future<void> deleteTodo(String id) async {
+    final url = "https://api.nstack.in/v1/todos/$id";
+    final uri = Uri.parse(url);
+    final response = await http.delete(uri);
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Request was successful!',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.blue,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Request failed. Please try again.',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,9 +90,13 @@ class _TodoListPageState extends State<TodoListPage> {
             itemCount: items.length,
             itemBuilder: (BuildContext context, int index) {
               final item = items[index] as Map;
+              final id = item["_id"] as String;
               return ListTile(
                 title: Text(item['title'].toString()),
                 subtitle: Text(item['description'].toString()),
+                trailing: IconButton(
+                    onPressed: () => deleteTodo(id),
+                    icon: Icon(Icons.delete_forever)),
               );
             },
           ),
