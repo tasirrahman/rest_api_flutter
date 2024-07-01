@@ -1,11 +1,9 @@
-// ignore_for_file: prefer_const_constructors
-
-import 'dart:convert';
+// ignore_for_file: prefer_const_constructors, unnecessary_import
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:http/http.dart' as http;
+import 'package:rest_api_flutter/model/post.dart';
 
 class AddTodoInList extends StatefulWidget {
   const AddTodoInList({super.key});
@@ -52,7 +50,14 @@ class _AddTodoInListState extends State<AddTodoInList> {
               height: 15,
             ),
             ElevatedButton(
-                onPressed: submitdata,
+                onPressed: () {
+                  final post = Post(
+                    title: title_ctrl.text,
+                    description: description_ctrl.text,
+                    context: context,
+                  );
+                  post.submitdata();
+                },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text('Submit'),
@@ -61,44 +66,5 @@ class _AddTodoInListState extends State<AddTodoInList> {
         ),
       ),
     );
-  }
-
-  submitdata() async {
-    final title = title_ctrl.text;
-    final description = description_ctrl.text;
-    final body = {
-      "title": title,
-      "description": description,
-      "is_completed": false
-    };
-    const url = "https://api.nstack.in/v1/todos";
-    final uri = Uri.parse(url);
-    final headers = {
-      "Content-Type": "application/json",
-    };
-    final response =
-        await http.post(uri, headers: headers, body: jsonEncode(body));
-
-    if (response.statusCode == 201) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Request was successful!',
-            style: TextStyle(color: Colors.white),
-          ),
-          backgroundColor: Colors.green,
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Request failed. Please try again.',
-            style: TextStyle(color: Colors.white),
-          ),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
   }
 }
