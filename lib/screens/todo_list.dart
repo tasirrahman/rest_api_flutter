@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:rest_api_flutter/screens/update_todo.dart';
 
 class TodoListPage extends StatefulWidget {
   const TodoListPage({super.key});
@@ -92,11 +93,49 @@ class _TodoListPageState extends State<TodoListPage> {
               final item = items[index] as Map;
               final id = item["_id"] as String;
               return ListTile(
+                leading: CircleAvatar(child: Text("${index + 1}")),
                 title: Text(item['title'].toString()),
                 subtitle: Text(item['description'].toString()),
-                trailing: IconButton(
-                    onPressed: () => deleteTodo(id),
-                    icon: Icon(Icons.delete_forever)),
+                trailing: PopupMenuButton<int>(
+                  onSelected: (value) {
+                    if (value == 0) {
+                      deleteTodo(id);
+                    } else if (value == 1) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UpdateTodoInList(
+                            title: item['title'].toString(),
+                            description: item['description'].toString(),
+                            id: id,
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 0,
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete_forever),
+                          SizedBox(width: 8),
+                          Text('Delete'),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 1,
+                      child: Row(
+                        children: [
+                          Icon(Icons.edit),
+                          SizedBox(width: 8),
+                          Text('Edit'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               );
             },
           ),

@@ -17,8 +17,10 @@ class MainApp extends StatelessWidget {
       darkTheme: ThemeData.dark(useMaterial3: false),
       theme: ThemeData.dark(useMaterial3: false),
       initialRoute: '/',
-      routes: {'/add': (context) => AddTodoInList()},
-      home: TodoListPage(),
+      routes: {
+        '/add': (context) => const AddTodoInList(),
+      },
+      home: const TodoListPage(),
     );
   }
 }
